@@ -51,7 +51,7 @@ echo 'LC_CTYPE=en_US.UTF-8' >> /etc/environment
 echo 'allowed_users=anybody' > /etc/X11/Xwrapper.config
 
 # install Ubuntu desktop and VirtualBox guest tools
-apt-get install -y xubuntu-desktop virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11
+apt-get install -y xubuntu-desktop virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-additions-iso
 
 # remove light-locker (see https://github.com/jhipster/jhipster-devbox/issues/54)
 apt-get remove -y light-locker --purge
@@ -76,6 +76,9 @@ apt-get install -y mysql-workbench
 
 # install PgAdmin
 apt-get install -y pgadmin3
+
+# install maven
+apt-get install -y maven
 
 # install Heroku toolbelt
 wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
