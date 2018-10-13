@@ -18,7 +18,7 @@ Vagrant.configure("2") do |config|
         # vb.customize ["modifyvm", :id, "--accelerate3d", "on"]
         vb.customize ['modifyvm', :id, '--clipboard', 'bidirectional']
         vb.customize ['modifyvm', :id, '--draganddrop', 'bidirectional']
-	# vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+        # vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
         vb.customize ['setextradata', :id, 'GUI/ScaleFactor', '2'] # High DPI screen
         vb.customize ["storageattach", :id, "--storagectl", "SATA Controller", "--port", "0", "--device", "0", "--nonrotational", "on"] # SSD
     end
