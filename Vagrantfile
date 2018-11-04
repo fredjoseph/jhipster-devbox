@@ -39,7 +39,7 @@ override_vagrant_config = configs['configs'][configs['configs']['use']]
 vagrant_config.merge!(override_vagrant_config)
     
 Vagrant.configure('2') do |config|
-    config.vm.box = 'bento/ubuntu-18.04'
+    config.vm.box = 'ubuntu/bionic64'
     config.vm.hostname = vagrant_config['name']
     vagrant_config['ports'].each { |obj|
         config.vm.network :forwarded_port, host: obj['host'], guest: obj['guest']
