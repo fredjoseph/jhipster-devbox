@@ -37,27 +37,46 @@ npm install -g generator-jhipster@6.2.0
 # install JHipster UML
 npm install -g jhipster-uml@2.0.3
 
+# install postgresql
+apt-get install -y postgresql
+su -c "createuser -s vagrant" postgres
+
+#install go
+apt-get install -y golang-go
+
 ################################################################################
 # Install the graphical environment
 ################################################################################
 
-# force encoding
-echo 'LANG=en_US.UTF-8' >> /etc/environment
-echo 'LANGUAGE=en_US.UTF-8' >> /etc/environment
-echo 'LC_ALL=en_US.UTF-8' >> /etc/environment
-echo 'LC_CTYPE=en_US.UTF-8' >> /etc/environment
+setxkbmap ${keyboard_layout}
+sed -i 's/XKBLAYOUT=\"\w*"/XKBLAYOUT=\"'"${keyboard_layout}"'\"/g' /etc/default/keyboard
+sed -i 's/XKBVARIANT=\"\w*"/XKBVARIANT=\"'"${keyboard_variant}"'\"/g' /etc/default/keyboard
 
+locale-gen "${locale}"'.UTF-8'
+echo 'LANG='"${locale}"'.UTF-8' >> /etc/environment
+echo 'LANGUAGE='"${locale}"'.UTF-8' >> /etc/environment
+echo 'LC_ALL='"${locale}"'.UTF-8' >> /etc/environment
+echo 'LC_CTYPE='"${locale}"'.UTF-8' >> /etc/environment
+
+touch /home/vagrant/.xscreensaver
+sed -i -e 's/mode:\t\trandom/mode:\t\toff/' /home/vagrant/.xscreensaver
+    
 # run GUI as non-privileged user
 echo 'allowed_users=anybody' > /etc/X11/Xwrapper.config
 
 # install Ubuntu desktop and VirtualBox guest tools
 apt-get install -y xubuntu-desktop virtualbox-guest-dkms virtualbox-guest-utils virtualbox-guest-x11 virtualbox-guest-additions-iso
 
+# auto-login
+touch /etc/lightdm/lightdm.conf
+echo '[SeatDefaults]' >> /etc/lightdm/lightdm.conf
+echo 'autologin-user=vagrant' >> /etc/lightdm/lightdm.conf
+echo 'autologin-user-timeout=0' >> /etc/lightdm/lightdm.conf
+
 # remove light-locker (see https://github.com/jhipster/jhipster-devbox/issues/54)
 apt-get remove -y light-locker --purge
 
 # change the default wallpaper
-#wget https://jhipster.github.io/images/wallpaper-004-2560x1440.png -O /usr/share/xfce4/backdrops/jhipster-wallpaper.png
 wget https://raw.githubusercontent.com/jhipster/jhipster-devbox/master/images/jhipster-wallpaper.png -O /usr/share/xfce4/backdrops/jhipster-wallpaper.png
 sed -i -e 's/xubuntu-wallpaper.png/jhipster-wallpaper.png/' /etc/xdg/xdg-xubuntu/xfce4/xfconf/xfce-perchannel-xml/xfce4-desktop.xml
 
@@ -74,9 +93,8 @@ apt-get install -y chromium-browser
 # install MySQL Workbench
 apt-get install -y mysql-workbench
 
-# install PgAdmin
-apt-get install -y pgadmin3
-
+# install PgAdmin and pgcli
+apt-get install -y pgadmin3 pgcli
 # install maven
 apt-get install -y maven
 
@@ -86,10 +104,6 @@ wget -O- https://toolbelt.heroku.com/install-ubuntu.sh | sh
 # install Guake
 apt-get install -y guake
 cp /usr/share/applications/guake.desktop /etc/xdg/autostart/
-
-# install jhipster-devbox
-git clone git://github.com/jhipster/jhipster-devbox.git /home/vagrant/jhipster-devbox
-chmod +x /home/vagrant/jhipster-devbox/tools/*.sh
 
 # install zsh
 apt-get install -y zsh
@@ -102,8 +116,8 @@ echo 'SHELL=/bin/zsh' >> /etc/environment
 
 # install jhipster-oh-my-zsh-plugin
 git clone https://github.com/jhipster/jhipster-oh-my-zsh-plugin.git /home/vagrant/.oh-my-zsh/custom/plugins/jhipster
-sed -i -e "s/plugins=(git)/plugins=(git docker docker-compose jhipster)/g" /home/vagrant/.zshrc
-echo 'export PATH="$PATH:/usr/bin:/home/vagrant/.yarn-global/bin:/home/vagrant/.yarn/bin:/home/vagrant/.config/yarn/global/node_modules/.bin"' >> /home/vagrant/.zshrc
+sed -i -e "s/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"avit\"/g" /home/vagrant/.zshrc
+echo "plugins+=(docker docker-compose jhipster)" >> /home/vagrant/.zshrc
 
 # change user to vagrant
 chown -R vagrant:vagrant /home/vagrant/.zshrc /home/vagrant/.oh-my-zsh
@@ -134,12 +148,101 @@ chmod +x /usr/local/bin/docker-compose
 # configure docker group (docker commands can be launched without sudo)
 usermod -aG docker vagrant
 
+# install postman
+snap install postman
+
+# install insomnia
+snap install insomnia
+
+################################################################################
+# Install utility tools
+################################################################################
+# install fuzzy finder
+apt-get install -y fzy
+
+# install jq
+apt-get install -y jq
+
+# install ripgrep
+curl --silent "https://api.github.com/repos/BurntSushi/ripgrep/releases/latest" | grep -Po '"tag_name": "\K.*?(?=")' | xargs -I {} curl -sOL "https://github.com/BurntSushi/ripgrep/releases/download/{}/ripgrep_{}_amd64.deb"
+dpkg -i ripgrep_*_amd64.deb
+rm ripgrep_*
+
+# install bat
+curl --silent "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep -Po '"tag_name": "v\K.*?(?=")' | xargs -I {} curl -sOL "https://github.com/sharkdp/bat/releases/download/v{}/bat_{}_amd64.deb"
+dpkg -i bat_*_amd64.deb
+rm bat_*
+
+su -c "mkdir /home/vagrant/.bash_completion.d"
+
+# install z/fzf
+su -c "git clone --depth 1 https://github.com/junegunn/fzf.git /home/vagrant/.fzf" vagrant
+su -c 'curl "https://raw.githubusercontent.com/rupa/z/master/{z.sh}" -o /home/vagrant/.bash_completion.d/"#1"'
+su -c 'curl "https://raw.githubusercontent.com/changyuheng/fz/master/{fz.sh}" -o /home/vagrant/.bash_completion.d/z"#1"'
+su -c "/home/vagrant/.fzf/install --all --no-bash" vagrant
+
+# install autocutsel
+apt-get install -y autocutsel
+echo 'autocutsel -selection PRIMARY -fork' >> /home/vagrant/.zshrc
+echo 'autocutsel -fork' >> /home/vagrant/.zshrc
+
+# install autojump
+apt-get install -y autojump
+echo "plugins+=(autojump)" >> /home/vagrant/.zshrc
+
+# install k
+git clone https://github.com/supercrabtree/k /home/vagrant/.oh-my-zsh/custom/plugins/k
+echo "plugins+=(k)" >> /home/vagrant/.zshrc
+
+# install bd
+mkdir -p /home/vagrant/.oh-my-zsh/custom/plugins/bd
+curl https://raw.githubusercontent.com/Tarrasch/zsh-bd/master/bd.zsh > /home/vagrant/.oh-my-zsh/custom/plugins/bd/bd.zsh
+echo "\n# zsh-bd\n. \$ZSH_CUSTOM/plugins/bd/bd.zsh" >> /home/vagrant/.zshrc
+
+# install lazygit
+add-apt-repository -y ppa:lazygit-team/release
+apt-get install -y lazygit
+
+#install highlight
+apt-get install -y highlight
+
+# install lf
+su -c "go get -u github.com/gokcehan/lf" vagrant
+mkdir -p /home/vagrant/.config/lf
+cp /home/vagrant/go/src/github.com/gokcehan/lf/etc/lfrc.example /home/vagrant/.config/lf/lfrc
+cat >> /home/vagrant/.config/lf/lfrc <<- EOM
+map v \$highlight --out-format=ansi \$f | less -R
+map V \$highlight --out-format=ansi \$(fzf) | less -R
+map e \$vi \$f
+map E \$vi \$(fzf)
+map l \$lf -remote "send \$id select \$(fzf)"
+EOM
+
+# Load bash_completions
+cat >> /home/vagrant/.zshrc <<- EOM
+if [ -d ~/.bash_completion.d ]; then
+  for file in ~/.bash_completion.d/*; do
+    . \$file
+  done
+fi
+EOM
+
+echo 'source $ZSH/oh-my-zsh.sh' >> /home/vagrant/.zshrc
+echo 'export PATH="$PATH:/usr/bin:/home/vagrant/.yarn-global/bin:/home/vagrant/.yarn/bin:/home/vagrant/.config/yarn/global/node_modules/.bin:/home/vagrant/go/bin"' >> /home/vagrant/.zshrc
+
+################################################################################
+# Clean the box
+################################################################################
+
+echo "sudo mount -t vboxsf host /host" >> /home/vagrant/.zshrc
+
 # fix ownership of home
 chown -R vagrant:vagrant /home/vagrant/
 
-# clean the box
 apt-get -y autoclean
 apt-get -y clean
 apt-get -y autoremove
 dd if=/dev/zero of=/EMPTY bs=1M > /dev/null 2>&1
 rm -f /EMPTY
+
+reboot

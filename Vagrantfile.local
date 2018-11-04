@@ -1,0 +1,55 @@
+# Vagrant local configuration file
+# This file allows to override the default configuration :
+#{
+#  'name' => "jhipster-devbox",
+#  'cpus' => 1,
+#  'ram' => "4096",
+#  'vram' => "64",
+#  'accelerate3d' => "on",
+#  'scale_factor' => "1",
+#  'ssd' => "off",
+#  'ports' => [
+#    {
+#      'host' => 8080,
+#      'guest' => 8080
+#    },
+#    {
+#      'host' => 9000,
+#      'guest' => 9000
+#    }
+#  ],
+#  'keyboard_layout' => "us",
+#  'keyboard_variant' => "",
+#  'locale' => "en_US",
+#  'timezone' => timezone
+#}
+configs:
+    use: home
+    office:
+        cpus: 8
+        ram: "15360"
+        scale_factor: "2"
+        accelerate3d: "off"
+        ssd: "on"
+        keyboard_layout: "fr"
+        locale: "fr_FR"
+        ports:
+            - host: 8080
+              guest: 8080
+            - host: 9000
+              guest: 9000
+            - host: 8095
+              guest: 8095
+            - host: 8098
+              guest: 8098
+    home:
+        cpus: 2
+        accelerate3d: "off"
+        ssd: "on"
+        keyboard_layout: "fr"
+        locale: "fr_FR"
+        ports:
+            - host: 8080
+              guest: 8080
+            - host: 9000
+              guest: 9000
