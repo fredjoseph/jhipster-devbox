@@ -20,8 +20,7 @@
 #  ],
 #  'keyboard_layout' => "us",
 #  'keyboard_variant' => "",
-#  'locale' => "en_US",
-#  'timezone' => timezone
+#  'locale' => "en_US"
 #}
 configs:
     use: home
