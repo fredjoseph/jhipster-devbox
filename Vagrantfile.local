@@ -2,6 +2,7 @@
 # This file allows to override the default configuration :
 #{
 #  'name' => "jhipster-devbox",
+#  'user' => "vagrant",
 #  'cpus' => 1,
 #  'ram' => "4096",
 #  'vram' => "64",
@@ -18,30 +19,15 @@
 #      'guest' => 9000
 #    }
 #  ],
+#  'hosts' => [],
 #  'keyboard_layout' => "us",
 #  'keyboard_variant' => "",
 #  'locale' => "en_US"
 #}
 configs:
     use: home
-    office:
-        cpus: 8
-        ram: "15360"
-        scale_factor: "2"
-        accelerate3d: "off"
-        ssd: "on"
-        keyboard_layout: "fr"
-        locale: "fr_FR"
-        ports:
-            - host: 8080
-              guest: 8080
-            - host: 9000
-              guest: 9000
-            - host: 8095
-              guest: 8095
-            - host: 8098
-              guest: 8098
-    home:
+    sample:
+        user: "fred"
         cpus: 2
         accelerate3d: "off"
         ssd: "on"
@@ -52,3 +38,24 @@ configs:
               guest: 8080
             - host: 9000
               guest: 9000
+            - host: 8081
+              guest: 8081
+        hosts:
+            - "127.0.1.1 puppetagent-1"
+            - "127.0.1.2 puppetagent-2"
+    office:
+        user: "fred"
+        cpus: 8
+        ram: "15360"
+        scale_factor: "2"
+        accelerate3d: "off"
+        ssd: "on"
+        keyboard_layout: "fr"
+        locale: "fr_FR"
+    home:
+        user: "fred"
+        cpus: 2
+        accelerate3d: "off"
+        ssd: "on"
+        keyboard_layout: "fr"
+        locale: "fr_FR"

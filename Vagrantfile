@@ -8,6 +8,7 @@ timezone = "Etc/GMT" + timezone_suffix
 require 'yaml'
 vagrant_config = {
   'name' => "jhipster-devbox",
+  'user' => "vagrant",
   'cpus' => 1,
   'ram' => "4096",
   'vram' => "64",
@@ -24,6 +25,7 @@ vagrant_config = {
       'guest' => 9000
     }
   ],
+  'hosts' => [],
   'keyboard_layout' => "us",
   'keyboard_variant' => "",
   'locale' => "en_US",
@@ -38,10 +40,14 @@ vagrant_config.merge!(override_vagrant_config)
     
 Vagrant.configure('2') do |config|
     config.vm.box = 'bento/ubuntu-18.04'
+    config.vm.hostname = vagrant_config['name']
     vagrant_config['ports'].each { |obj|
         config.vm.network :forwarded_port, host: obj['host'], guest: obj['guest']
     }
     config.ssh.insert_key = true
+    if ARGV[0] == "ssh"
+        config.ssh.username = vagrant_config['user']
+    end
     config.vm.synced_folder Dir.home(), '/host', disabled: false
     
     config.vm.provision :shell, :inline => "sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/" + vagrant_config['timezone'] + " /etc/localtime", run: 'always'
