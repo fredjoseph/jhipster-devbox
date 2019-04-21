@@ -46,7 +46,6 @@ Vagrant.configure('2') do |config|
     
     config.vm.provision :shell, :inline => "sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/" + vagrant_config['timezone'] + " /etc/localtime", run: 'always'
     config.vm.provision :shell, env: vagrant_config, :path => 'scripts/setup.sh'
-    #config.vm.provision :shell, :inline => "su -c \"/home/vagrant/.fzf/install --all --no-bash\" vagrant", run: 'always'
     
     config.vm.provider :virtualbox do |vb|
         vb.gui = true
