@@ -93,7 +93,6 @@ npm install -g generator-jhipster@6.2.0
 
 # install JHipster UML
 npm install -g jhipster-uml@2.0.3
-
 EOF
 
 # install postgresql
@@ -164,7 +163,7 @@ apt-get install -y zsh
 git clone git://github.com/robbyrussell/oh-my-zsh.git /home/${user}/.oh-my-zsh
 cp /home/${user}/.oh-my-zsh/templates/zshrc.zsh-template /home/${user}/.zshrc
 sed -i -e "s/ZSH_THEME=\"robbyrussell\"/ZSH_THEME=\"avit\"/g" /home/${user}/.zshrc
-echo "plugins+=(docker docker-compose)" >> /home/${user}/.zshrc
+echo "plugins+=(docker docker-compose colored-man-pages common-aliases)" >> /home/${user}/.zshrc
 chsh -s /bin/zsh ${user}
 echo 'SHELL=/bin/zsh' >> /etc/environment
 
@@ -220,6 +219,9 @@ snap install insomnia
 # install fuzzy finder
 apt-get install -y fzy
 
+# install httpie
+apt-get install -y httpie
+
 ## install jq
 #apt-get install -y jq
 
@@ -228,18 +230,38 @@ curl --silent "https://api.github.com/repos/BurntSushi/ripgrep/releases/latest" 
 dpkg -i ripgrep_*_amd64.deb
 rm ripgrep_*
 
+# install fd
+curl --silent "https://api.github.com/repos/sharkdp/fd/releases/latest" | grep -Po '"tag_name": "v\K.*?(?=")' | xargs -I {} curl -sOL "https://github.com/sharkdp/fd/releases/download/v{}/fd_{}_amd64.deb"
+dpkg -i fd_*_amd64.deb
+rm fd_*
+
 # install bat
 curl --silent "https://api.github.com/repos/sharkdp/bat/releases/latest" | grep -Po '"tag_name": "v\K.*?(?=")' | xargs -I {} curl -sOL "https://github.com/sharkdp/bat/releases/download/v{}/bat_{}_amd64.deb"
 dpkg -i bat_*_amd64.deb
 rm bat_*
 
-su -c "mkdir /home/${user}/.bash_completion.d"
+su -c "mkdir /home/${user}/.zsh_completion.d"
 
 # install z/fzf
 su -c "git clone --depth 1 https://github.com/junegunn/fzf.git /home/${user}/.fzf" ${user}
-su -c "curl \"https://raw.githubusercontent.com/rupa/z/master/{z.sh}\" -o /home/${user}/.bash_completion.d/\"#1\""
-su -c 'curl "https://raw.githubusercontent.com/changyuheng/fz/master/{fz.sh}" -o /home/${user}/.bash_completion.d/z"#1"'
+su -c "curl \"https://raw.githubusercontent.com/rupa/z/master/{z.sh}\" -o /home/${user}/.zsh_completion.d/\"#1\""
+su -c 'curl "https://raw.githubusercontent.com/changyuheng/fz/master/{fz.sh}" -o /home/${user}/.zsh_completion.d/z"#1"'
 su -c "/home/${user}/.fzf/install --all --no-bash" ${user}
+cat >> /home/${user}/.zshrc <<- EOM
+# Exclude those directories even if not listed in .gitignore, or if .gitignore is missing
+FD_OPTIONS="--follow --exclude .git --exclude node_modules"
+
+# Change behavior of fzf dialogue
+export FZF_DEFAULT_OPTS="--no-mouse --height 50% -1 --reverse --multi --inline-info --preview='[[ \$(file --mime {}) =~ binary ]] && echo {} is a binary file || (bat --style=numbers --color=always {} || cat {}) 2> /dev/null | head -300' --preview-window='right:hidden:wrap' --bind='f3:execute(bat --style=numbers {} || less -f {}),f2:toggle-preview,ctrl-d:half-page-down,ctrl-u:half-page-up,ctrl-a:select-all+accept,ctrl-y:execute-silent(echo {+} | pbcopy)'"
+
+# Change find backend
+# Use 'git ls-files' when inside GIT repo, or fd otherwise
+export FZF_DEFAULT_COMMAND="git ls-files --cached --others --exclude-standard | fd --type f --type l $FD_OPTIONS"
+
+# Find commands for "Ctrl+T" and "Opt+C" shortcuts
+export FZF_CTRL_T_COMMAND="fd $FD_OPTIONS"
+export FZF_ALT_C_COMMAND="fd --type d $FD_OPTIONS"
+EOM
 touch /home/${user}/.z
 
 # install autocutsel
@@ -288,17 +310,65 @@ curl --silent "https://api.github.com/repos/jarun/nnn/releases/latest" | grep -P
 dpkg -i nnn_*_debian9.amd64.deb
 rm nnn_*
 
-# Load bash_completions
+# install wuzz (HTTP inspector)
+su -c "go get -u github.com/asciimoo/wuzz" ${user}
+
+# install has
+curl -sL https://git.io/_has > /usr/local/bin/has
+chmod +x /usr/local/bin/has
+
+# install yq
+snap install yq
+
+#install cheat.sh
+apt-get install -y xsel rlwrap
+curl https://cht.sh/:cht.sh > /usr/local/bin/cht.sh
+chmod +x /usr/local/bin/cht.sh
+
+# install npm dependencies
+su - ${user} << EOF
+# install can i use
+npm install -g caniuse-cmd
+
+# install tldr
+npm install -g tldr
+
+# install fx (JSON viewer)
+npm install -g fx
+EOF
+
+# install vim plugin
+curl -fLo /home/${user}/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+cat >> /home/${user}/.vimrc <<- EOM
+source ~/.vim/.plug.vim
+EOM
+wget https://raw.githubusercontent.com/fredjoseph/jhipster-devbox/master/scripts/.plug.vim -O /home/${user}/.vim/.plug.vim
+
+# Load zsh_completions
 cat >> /home/${user}/.zshrc <<- EOM
-if [ -d ~/.bash_completion.d ]; then
-  for file in ~/.bash_completion.d/*; do
+if [ -d ~/.zsh_completion.d ]; then
+  for file in ~/.zsh_completion.d/*; do
     . \$file
   done
 fi
 EOM
 
+# Aliases
+cat >> /home/${user}/.zshrc <<- EOM
+bro() {curl bropages.org/\$1.json | jq -r ".[].msg" | highlight --out-format=truecolor --syntax=bash | less -R}
+EOM
+
 echo 'source $ZSH/oh-my-zsh.sh' >> /home/${user}/.zshrc
+
+# Fixes
+sed -i '/[ -f ~\/.fzf.zsh ] && source ~\/.fzf.zsh/d' /home/${user}/.zshrc # delete the existing line and add it at the end of the file
+cat >> /home/${user}/.zshrc <<- EOM
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+unalias fd
+EOM
+
 echo "export PATH=\"\$PATH:/home/${user}/.yarn-global/bin:/home/${user}/.yarn/bin:/home/${user}/.config/yarn/global/node_modules/.bin:/home/${user}/go/bin\"" >> /home/${user}/.zshrc
+echo "typeset -aU fpath" >> /home/${user}/.zshrc
 
 ################################################################################
 # Clean the box
