@@ -72,7 +72,7 @@ apt-get install -y vim git zip bzip2 fontconfig curl language-pack-en
 apt-get install -y openjdk-8-jdk
 
 # install Node.js, NPM and dependencies
-su -c "curl --silent \"https://api.github.com/repos/creationix/nvm/releases/latest\" | grep -Po '\"tag_name\": \"\K.*?(?=\")' | xargs -I {} curl -o- \"https://raw.githubusercontent.com/creationix/nvm/{}/install.sh\" | bash" ${user}
+su -c "curl --silent \"https://api.github.com/repos/nvm-sh/nvm/releases/latest\" | grep -Po '\"tag_name\": \"\K.*?(?=\")' | xargs -I {} curl -o- \"https://raw.githubusercontent.com/nvm-sh/nvm/{}/install.sh\" | bash" ${user}
 su - ${user} << EOF
 export NVM_DIR=\$HOME/.nvm
 . \$NVM_DIR/nvm.sh 
@@ -173,8 +173,8 @@ git clone https://github.com/lukechilds/zsh-better-npm-completion /home/${user}/
 cat >> /home/${user}/.zshrc <<- EOM
 export NVM_LAZY_LOAD=true
 export NVM_DIR="\$HOME/.nvm"
-[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "\$NVM_DIR/bash_completion" ] && \. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+#[ -s "\$NVM_DIR/nvm.sh" ] && \. "\$NVM_DIR/nvm.sh"  # This loads nvm
+#[ -s "\$NVM_DIR/bash_completion" ] && \. "\$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
 plugins+=(zsh-nvm zsh-better-npm-completion)
 EOM
