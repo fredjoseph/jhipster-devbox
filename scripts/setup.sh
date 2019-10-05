@@ -335,6 +335,9 @@ npm install -g tldr
 
 # install fx (JSON viewer)
 npm install -g fx
+
+# install Kmdr
+npm install -g kmdr
 EOF
 
 # install vim plugin
