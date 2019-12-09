@@ -264,11 +264,6 @@ export FZF_ALT_C_COMMAND="fd --type d $FD_OPTIONS"
 EOM
 touch /home/${user}/.z
 
-# install autocutsel
-apt-get install -y autocutsel
-echo 'autocutsel -selection PRIMARY -fork' >> /home/${user}/.zshrc
-echo 'autocutsel -fork' >> /home/${user}/.zshrc
-
 # install autojump
 apt-get install -y autojump
 echo "plugins+=(autojump)" >> /home/${user}/.zshrc
