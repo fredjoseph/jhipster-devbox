@@ -320,19 +320,31 @@ apt-get install -y xsel rlwrap
 curl https://cht.sh/:cht.sh > /usr/local/bin/cht.sh
 chmod +x /usr/local/bin/cht.sh
 
+#install ncdu
+sudo apt install ncdu
+
 # install npm dependencies
 su - ${user} << EOF
 # install can i use
 npm install -g caniuse-cmd
-
 # install tldr
 npm install -g tldr
-
 # install fx (JSON viewer)
 npm install -g fx
-
-# install Kmdr
+# install fkill
+npm install -g fkill-cli
+# install vtop
+npm install -g vtop
+# install kmdr
 npm install -g kmdr
+# install http-server
+npm install -g http-server
+# install npkill (find and delete node_modules folders)
+npm i -g npkill
+# install dockly
+npm install -g dockly
+# install how2
+npm install -g how-2
 EOF
 
 # install vim plugin
