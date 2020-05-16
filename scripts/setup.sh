@@ -315,13 +315,16 @@ chmod +x /usr/local/bin/has
 # install yq
 snap install yq
 
-#install cheat.sh
+# install cheat.sh
 apt-get install -y xsel rlwrap
 curl https://cht.sh/:cht.sh > /usr/local/bin/cht.sh
 chmod +x /usr/local/bin/cht.sh
 
-#install ncdu
+# install ncdu
 sudo apt install ncdu
+
+# install ctags
+sudo apt install universal-ctags
 
 # install npm dependencies
 su - ${user} << EOF
